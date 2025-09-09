@@ -1,7 +1,7 @@
 import { 
   LayoutDashboard, 
   Receipt, 
-  CreditCard, 
+  Upload, 
   BarChart3, 
   Users, 
   Settings,
@@ -9,6 +9,7 @@ import {
   Camera
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Link, useLocation } from "react-router-dom";
 
 interface SidebarProps {
   open: boolean;
@@ -16,16 +17,16 @@ interface SidebarProps {
 }
 
 const navigation = [
-  { name: "Dashboard", href: "/", icon: LayoutDashboard, current: true },
-  { name: "Gastos", href: "/expenses", icon: CreditCard, current: false },
-  { name: "Subir Ticket", href: "/upload", icon: Camera, current: false },
-  { name: "Análisis", href: "/analytics", icon: BarChart3, current: false },
-  { name: "Empleados", href: "/employees", icon: Users, current: false, adminOnly: true },
-  { name: "Reportes", href: "/reports", icon: FileText, current: false },
-  { name: "Configuración", href: "/settings", icon: Settings, current: false },
+  { name: "Dashboard", href: "/", icon: LayoutDashboard },
+  { name: "Gastos", href: "/expenses", icon: Receipt },
+  { name: "Subir Ticket", href: "/upload", icon: Upload },
+  { name: "Análisis", href: "/analytics", icon: BarChart3 },
+  { name: "Empleados", href: "/employees", icon: Users, adminOnly: true },
+  { name: "Configuración", href: "/settings", icon: Settings },
 ];
 
 export const Sidebar = ({ open, onClose }: SidebarProps) => {
+  const location = useLocation();
   // Mock user role - in real app this would come from auth context
   const userRole = "ADMIN"; // or "EMPLOYEE"
 
@@ -59,13 +60,16 @@ export const Sidebar = ({ open, onClose }: SidebarProps) => {
                 return null;
               }
 
+              const isActive = location.pathname === item.href;
+
               return (
-                <a
+                <Link
                   key={item.name}
-                  href={item.href}
+                  to={item.href}
+                  onClick={onClose}
                   className={cn(
                     "group flex items-center rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                    item.current
+                    isActive
                       ? "bg-primary text-primary-foreground shadow-sm"
                       : "text-muted-foreground hover:bg-secondary hover:text-secondary-foreground"
                   )}
@@ -73,11 +77,11 @@ export const Sidebar = ({ open, onClose }: SidebarProps) => {
                   <item.icon
                     className={cn(
                       "mr-3 h-5 w-5 flex-shrink-0",
-                      item.current ? "text-primary-foreground" : "text-muted-foreground group-hover:text-secondary-foreground"
+                      isActive ? "text-primary-foreground" : "text-muted-foreground group-hover:text-secondary-foreground"
                     )}
                   />
                   {item.name}
-                </a>
+                </Link>
               );
             })}
           </nav>

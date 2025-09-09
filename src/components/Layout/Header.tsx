@@ -2,6 +2,7 @@ import { Menu, Bell, Search, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Link } from "react-router-dom";
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -32,11 +33,16 @@ export const Header = ({ onMenuClick }: HeaderProps) => {
           </div>
         </div>
 
-        {/* Actions */}
-        <div className="flex items-center space-x-2">
-          <Button size="sm" className="hidden sm:flex">
-            <Plus className="w-4 h-4 mr-2" />
-            Nuevo Gasto
+        {/* Spacer to push actions to the right */}
+        <div className="flex-1"></div>
+
+        {/* Actions - positioned at the far right */}
+        <div className="flex items-center space-x-3 ml-auto">
+          <Button size="sm" className="hidden sm:flex" asChild>
+            <Link to="/upload">
+              <Plus className="w-4 h-4 mr-2" />
+              Nuevo Gasto
+            </Link>
           </Button>
           
           <Button variant="ghost" size="sm" className="relative">
