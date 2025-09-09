@@ -2,41 +2,66 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* Gestión de Gastos Empresariales - Sistema de Diseño Profesional */
 
 @layer base {
   :root {
+    /* Paleta profesional financiera */
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 215 25% 15%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 215 25% 15%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 215 25% 15%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Verde financiero profesional como primario */
+    --primary: 148 40% 28%;
+    --primary-foreground: 0 0% 98%;
+    --primary-glow: 148 45% 35%;
+    --primary-light: 148 35% 85%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Azul corporativo como secundario */
+    --secondary: 214 45% 95%;
+    --secondary-foreground: 214 45% 20%;
+    --secondary-dark: 214 65% 25%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Tonos neutros refinados */
+    --muted: 214 20% 96%;
+    --muted-foreground: 214 15% 45%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 45 100% 96%;
+    --accent-foreground: 45 100% 20%;
+    --accent-warning: 45 90% 55%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    /* Estados de gasto */
+    --status-pending: 45 95% 50%;
+    --status-pending-foreground: 45 100% 15%;
+    --status-approved: 148 45% 45%;
+    --status-approved-foreground: 0 0% 100%;
+    --status-rejected: 0 75% 55%;
+    --status-rejected-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --destructive: 0 75% 55%;
+    --destructive-foreground: 0 0% 98%;
 
-    --radius: 0.5rem;
+    --border: 214 25% 90%;
+    --input: 214 25% 96%;
+    --ring: 148 40% 28%;
+
+    /* Gradientes elegantes */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
+    --gradient-secondary: linear-gradient(135deg, hsl(var(--secondary-dark)), hsl(214 45% 35%));
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(214 15% 98%));
+    --gradient-hero: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary-glow)) 50%, hsl(214 65% 25%) 100%);
+
+    /* Sombras profesionales */
+    --shadow-card: 0 2px 8px -2px hsl(214 25% 15% / 0.08), 0 4px 16px -4px hsl(214 25% 15% / 0.05);
+    --shadow-elevated: 0 8px 32px -8px hsl(214 25% 15% / 0.12), 0 2px 8px -2px hsl(214 25% 15% / 0.08);
+    --shadow-primary: 0 4px 24px -4px hsl(var(--primary) / 0.25);
+
+    --radius: 0.75rem;
 
     --sidebar-background: 0 0% 98%;
 
@@ -56,33 +81,57 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    /* Tema oscuro financiero */
+    --background: 214 25% 8%;
+    --foreground: 214 15% 92%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 214 25% 10%;
+    --card-foreground: 214 15% 92%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 214 25% 10%;
+    --popover-foreground: 214 15% 92%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 148 45% 45%;
+    --primary-foreground: 214 25% 8%;
+    --primary-glow: 148 50% 55%;
+    --primary-light: 148 35% 25%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 214 25% 15%;
+    --secondary-foreground: 214 15% 85%;
+    --secondary-dark: 214 25% 12%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 214 25% 15%;
+    --muted-foreground: 214 15% 60%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 45 80% 20%;
+    --accent-foreground: 45 100% 90%;
+    --accent-warning: 45 85% 60%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    /* Estados de gasto en modo oscuro */
+    --status-pending: 45 85% 60%;
+    --status-pending-foreground: 45 100% 10%;
+    --status-approved: 148 50% 55%;
+    --status-approved-foreground: 214 25% 8%;
+    --status-rejected: 0 70% 60%;
+    --status-rejected-foreground: 214 25% 8%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --destructive: 0 70% 60%;
+    --destructive-foreground: 214 25% 8%;
+
+    --border: 214 25% 20%;
+    --input: 214 25% 15%;
+    --ring: 148 45% 45%;
+
+    /* Gradientes en modo oscuro */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
+    --gradient-secondary: linear-gradient(135deg, hsl(var(--secondary-dark)), hsl(214 25% 18%));
+    --gradient-card: linear-gradient(145deg, hsl(214 25% 10%), hsl(214 25% 12%));
+    --gradient-hero: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary-glow)) 50%, hsl(214 25% 15%) 100%);
+
+    /* Sombras ajustadas para modo oscuro */
+    --shadow-card: 0 2px 8px -2px hsl(214 25% 5% / 0.25), 0 4px 16px -4px hsl(214 25% 5% / 0.15);
+    --shadow-elevated: 0 8px 32px -8px hsl(214 25% 5% / 0.35), 0 2px 8px -2px hsl(214 25% 5% / 0.25);
+    --shadow-primary: 0 4px 24px -4px hsl(var(--primary) / 0.4);
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -94,12 +143,44 @@ All colors MUST be HSL.
   }
 }
 
+}
+
 @layer base {
   * {
     @apply border-border;
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+
+  /* Estilos personalizados para componentes financieros */
+  .expense-card {
+    @apply bg-gradient-to-br from-card to-card/95 backdrop-blur-sm border border-border/50;
+    box-shadow: var(--shadow-card);
+  }
+
+  .expense-card:hover {
+    box-shadow: var(--shadow-elevated);
+  }
+
+  .status-badge-pending {
+    @apply bg-status-pending text-status-pending-foreground;
+  }
+
+  .status-badge-approved {
+    @apply bg-status-approved text-status-approved-foreground;
+  }
+
+  .status-badge-rejected {
+    @apply bg-status-rejected text-status-rejected-foreground;
+  }
+
+  .hero-gradient {
+    background: var(--gradient-hero);
+  }
+
+  .card-gradient {
+    background: var(--gradient-card);
   }
 }
