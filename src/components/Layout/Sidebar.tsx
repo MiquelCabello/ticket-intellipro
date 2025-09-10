@@ -19,7 +19,7 @@ interface SidebarProps {
 const navigation = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
   { name: "Gastos", href: "/expenses", icon: Receipt },
-  { name: "Subir Ticket", href: "/upload", icon: Upload },
+  { name: "Subir Ticket", href: "/upload-tickets", icon: Upload },
   { name: "Análisis", href: "/analytics", icon: BarChart3 },
   { name: "Empleados", href: "/employees", icon: Users, adminOnly: true },
   { name: "Configuración", href: "/settings", icon: Settings },
