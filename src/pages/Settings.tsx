@@ -1,14 +1,20 @@
 import { MainLayout } from "@/components/Layout/MainLayout";
+import { GeneralPreferences } from "@/components/Settings/GeneralPreferences";
+import { OrganizationSettings } from "@/components/Settings/OrganizationSettings";
+import { CategoriesManagement } from "@/components/Settings/CategoriesManagement";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { Settings as SettingsIcon, Moon, Sun, Euro, Database, Shield, Download } from "lucide-react";
+import { Database, Shield, Download, LogOut, Smartphone } from "lucide-react";
 
 const Settings = () => {
+  const handleLogout = async () => {
+    if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
+      // TODO: Implement logout functionality
+      console.log('Logout functionality to be implemented');
+    }
+  };
+
   return (
     <MainLayout>
       <div className="space-y-6">
@@ -21,135 +27,14 @@ const Settings = () => {
         </div>
 
         <div className="grid gap-6 lg:grid-cols-2">
-          {/* Preferences */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <SettingsIcon className="h-5 w-5" />
-                Preferencias Generales
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label>Tema Oscuro</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Alternar entre tema claro y oscuro
-                  </p>
-                </div>
-                <Switch />
-              </div>
+          {/* General Preferences */}
+          <GeneralPreferences />
 
-              <Separator />
-
-              <div className="space-y-2">
-                <Label htmlFor="language">Idioma</Label>
-                <Select defaultValue="es">
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="es">Español</SelectItem>
-                    <SelectItem value="en">English</SelectItem>
-                    <SelectItem value="fr">Français</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="timezone">Zona Horaria</Label>
-                <Select defaultValue="europe-madrid">
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="europe-madrid">Europe/Madrid</SelectItem>
-                    <SelectItem value="europe-london">Europe/London</SelectItem>
-                    <SelectItem value="america-new_york">America/New_York</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Financial Configuration */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Euro className="h-5 w-5" />
-                Configuración Financiera
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="currency">Moneda Base</Label>
-                <Select defaultValue="EUR">
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="EUR">EUR (€)</SelectItem>
-                    <SelectItem value="USD">USD ($)</SelectItem>
-                    <SelectItem value="GBP">GBP (£)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="vat">IVA por Defecto (%)</Label>
-                <Input
-                  id="vat"
-                  type="number"
-                  placeholder="21"
-                  defaultValue="21"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="approval-limit">Límite Aprobación Automática (€)</Label>
-                <Input
-                  id="approval-limit"
-                  type="number"
-                  placeholder="100"
-                  defaultValue="100"
-                />
-                <p className="text-sm text-muted-foreground">
-                  Gastos menores a este importe se aprueban automáticamente
-                </p>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label>Modo Sandbox</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Activar para pruebas sin facturación real
-                  </p>
-                </div>
-                <Switch />
-              </div>
-            </CardContent>
-          </Card>
+          {/* Organization Settings */}
+          <OrganizationSettings />
 
           {/* Categories Management */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Gestión de Categorías</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label>Categorías Activas</Label>
-                <div className="space-y-2">
-                  {["Viajes", "Dietas", "Transporte", "Alojamiento", "Material", "Software", "Otros"].map((category) => (
-                    <div key={category} className="flex items-center justify-between p-2 border rounded">
-                      <span className="text-sm">{category}</span>
-                      <Button variant="outline" size="sm">Editar</Button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <Button className="w-full">Añadir Categoría</Button>
-            </CardContent>
-          </Card>
+          <CategoriesManagement />
 
           {/* Project Codes */}
           <Card>
@@ -157,25 +42,12 @@ const Settings = () => {
               <CardTitle>Códigos de Proyecto</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label>Proyectos Activos</Label>
-                <div className="space-y-2">
-                  {[
-                    { code: "PRJ-001", name: "Proyecto General" },
-                    { code: "PRJ-CLIENTE-A", name: "Cliente A - Marketing" },
-                    { code: "INT-OPS", name: "Operaciones Internas" }
-                  ].map((project) => (
-                    <div key={project.code} className="flex items-center justify-between p-2 border rounded">
-                      <div>
-                        <span className="text-sm font-medium">{project.code}</span>
-                        <p className="text-xs text-muted-foreground">{project.name}</p>
-                      </div>
-                      <Button variant="outline" size="sm">Editar</Button>
-                    </div>
-                  ))}
-                </div>
+              <div className="text-center py-6 text-muted-foreground">
+                <p>Gestión de códigos de proyecto</p>
+                <Button className="mt-2" disabled>
+                  Próximamente
+                </Button>
               </div>
-              <Button className="w-full">Añadir Proyecto</Button>
             </CardContent>
           </Card>
 
@@ -188,22 +60,25 @@ const Settings = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <Button className="w-full" variant="outline">
+              <Button className="w-full" variant="outline" disabled>
                 <Download className="w-4 h-4 mr-2" />
                 Exportar Base de Datos Completa
+                <span className="ml-auto text-xs text-muted-foreground">Próximamente</span>
               </Button>
               
-              <Button className="w-full" variant="outline">
+              <Button className="w-full" variant="outline" disabled>
                 <Download className="w-4 h-4 mr-2" />
                 Exportar Mis Datos Personales
+                <span className="ml-auto text-xs text-muted-foreground">Próximamente</span>
               </Button>
               
               <Separator />
               
               <div className="space-y-2">
-                <Label className="text-destructive">Zona de Peligro</Label>
-                <Button variant="destructive" className="w-full">
+                <h4 className="text-sm font-medium text-destructive">Zona de Peligro</h4>
+                <Button variant="destructive" className="w-full" disabled>
                   Solicitar Eliminación de Cuenta
+                  <span className="ml-auto text-xs">Próximamente</span>
                 </Button>
                 <p className="text-xs text-muted-foreground">
                   Esta acción eliminará permanentemente todos tus datos personales
@@ -221,32 +96,47 @@ const Settings = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <Button className="w-full" variant="outline">
+              <Button className="w-full" variant="outline" disabled>
                 Cambiar Contraseña
+                <span className="ml-auto text-xs text-muted-foreground">Próximamente</span>
               </Button>
               
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between p-3 border rounded">
                 <div className="space-y-0.5">
-                  <Label>Autenticación de Dos Factores</Label>
-                  <p className="text-sm text-muted-foreground">
+                  <h4 className="text-sm font-medium">Autenticación de Dos Factores</h4>
+                  <p className="text-xs text-muted-foreground">
                     Añade una capa extra de seguridad
                   </p>
                 </div>
-                <Switch />
+                <Button variant="outline" size="sm" disabled>
+                  <Smartphone className="h-4 w-4 mr-2" />
+                  Configurar
+                </Button>
               </div>
 
               <div className="space-y-2">
-                <Label>Sessiones Activas</Label>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between p-2 border rounded">
-                    <div>
-                      <span className="text-sm font-medium">Navegador Web - Madrid</span>
-                      <p className="text-xs text-muted-foreground">Activa ahora</p>
-                    </div>
-                    <Button variant="outline" size="sm">Cerrar</Button>
+                <h4 className="text-sm font-medium">Sessiones Activas</h4>
+                <div className="flex items-center justify-between p-3 border rounded">
+                  <div>
+                    <span className="text-sm font-medium">Navegador Web - Madrid</span>
+                    <p className="text-xs text-muted-foreground">Activa ahora</p>
                   </div>
+                  <Button variant="outline" size="sm" disabled>
+                    Cerrar
+                  </Button>
                 </div>
               </div>
+
+              <Separator />
+
+              <Button
+                className="w-full"
+                variant="destructive"
+                onClick={handleLogout}
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Cerrar Sesión
+              </Button>
             </CardContent>
           </Card>
         </div>
