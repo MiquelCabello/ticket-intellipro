@@ -421,7 +421,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_user_organization_id: {
+        Args: { user_id: string }
+        Returns: string
+      }
     }
     Enums: {
       document_type: "TICKET" | "FACTURA"

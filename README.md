@@ -59,6 +59,51 @@ This project is built with:
 - React
 - shadcn-ui
 - Tailwind CSS
+- Supabase (Backend)
+- Vitest (Unit Testing)
+- Playwright (E2E Testing)
+
+## Desarrollo
+
+### Comandos disponibles
+
+```bash
+# Desarrollo
+npm run dev          # Inicia servidor de desarrollo
+npm run build        # Build para producción
+npm run preview      # Preview del build localmente
+
+# Testing
+npm run test         # Tests unitarios (Vitest)
+npm run test:ui      # Tests con interfaz visual
+npm run e2e          # Tests end-to-end (Playwright)
+
+# Linting y formato
+npm run lint         # Linter con ESLint
+npm run format       # Formatear código con Prettier
+```
+
+### Configuración de entorno
+
+Copia `.env.example` a `.env` y configura las variables:
+
+```bash
+cp .env.example .env
+```
+
+### Testing
+
+- **Unit tests**: Vitest con React Testing Library
+- **E2E tests**: Playwright para flujos críticos
+- **CI**: GitHub Actions ejecuta build, lint, test, e2e
+
+### Finanzas y decimales
+
+El sistema utiliza `DECIMAL(18,4)` para cálculos financieros:
+- Cálculos internos: 4 decimales de precisión
+- UI: 2 decimales para mostrar al usuario
+- Monedas: formato ISO 4217 (EUR, USD, GBP)
+- Fechas: ISO 8601 (YYYY-MM-DD, UTC)
 
 ## How can I deploy this project?
 
