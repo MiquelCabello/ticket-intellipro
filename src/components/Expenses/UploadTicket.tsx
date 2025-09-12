@@ -325,7 +325,7 @@ export const UploadTicket = () => {
                       </p>
                     </div>
                   </div>
-                  <Button variant="ghost" size="sm" onClick={clearFile}>
+                  <Button variant="ghost" size="sm" onClick={clearFile} aria-label="Eliminar archivo seleccionado">
                     <X className="h-4 w-4" />
                   </Button>
                 </div>

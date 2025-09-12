@@ -18,6 +18,7 @@ export const Header = ({ onMenuClick }: HeaderProps) => {
           size="sm"
           className="lg:hidden mr-2"
           onClick={onMenuClick}
+          aria-label="Abrir menú de navegación"
         >
           <Menu className="h-5 w-5" />
         </Button>
@@ -29,6 +30,7 @@ export const Header = ({ onMenuClick }: HeaderProps) => {
             <Input
               placeholder="Buscar gastos, comercios..."
               className="pl-10 bg-muted/50"
+              aria-label="Campo de búsqueda de gastos y comercios"
             />
           </div>
         </div>
@@ -45,7 +47,7 @@ export const Header = ({ onMenuClick }: HeaderProps) => {
             </Link>
           </Button>
           
-          <Button variant="ghost" size="sm" className="relative">
+          <Button variant="ghost" size="sm" className="relative" aria-label="Notificaciones, 3 sin leer">
             <Bell className="h-5 w-5" />
             <Badge 
               variant="destructive" 

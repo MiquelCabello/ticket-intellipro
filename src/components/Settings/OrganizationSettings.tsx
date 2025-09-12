@@ -171,7 +171,7 @@ export const OrganizationSettings = () => {
         </div>
 
         <div className="flex justify-end pt-4 border-t">
-          <Button onClick={handleSave} disabled={saving}>
+          <Button onClick={handleSave} disabled={saving} aria-label="Guardar configuración de la organización">
             {saving ? (
               <>
                 <div className="animate-spin h-4 w-4 border-2 border-primary border-t-transparent rounded-full mr-2" />

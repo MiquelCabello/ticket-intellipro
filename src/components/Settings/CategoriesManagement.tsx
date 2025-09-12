@@ -178,7 +178,7 @@ export const CategoriesManagement = () => {
           <CardTitle>Gestión de Categorías</CardTitle>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button onClick={openAddDialog} size="sm">
+              <Button onClick={openAddDialog} size="sm" aria-label="Añadir nueva categoría">
                 <Plus className="h-4 w-4 mr-2" />
                 Añadir
               </Button>
