@@ -81,7 +81,30 @@ npm run e2e          # Tests end-to-end (Playwright)
 # Linting y formato
 npm run lint         # Linter con ESLint
 npm run format       # Formatear código con Prettier
+
+# Seguridad y rendimiento (Fase 2)
+npm run audit:security    # Auditoría de seguridad
+npm run audit:fix        # Fix automático de vulnerabilidades
+npm run performance:check # Verificación de rendimiento
 ```
+
+### Auditoría y seguridad (Fase 2)
+
+- **Auditoría de dependencias**: Bloquea vulnerabilidades críticas en CI
+- **Métricas p95**: Monitoreo automático de rendimiento de carga
+- **Logs estructurados**: Sistema de logging con métricas de rendimiento
+- **Error boundaries**: Manejo robusto de errores con logging automático
+
+### Performance Monitoring
+
+El sistema registra automáticamente:
+- Tiempo de carga total (p95)
+- First Byte Time
+- DOM Interactive
+- DOM Content Loaded
+- Load Complete
+
+Las métricas se almacenan localmente en desarrollo y se pueden enviar a servicios de monitoreo en producción.
 
 ### Configuración de entorno
 
