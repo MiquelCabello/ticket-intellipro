@@ -10,13 +10,17 @@ import { Badge } from "@/components/ui/badge";
 import { Upload, Camera, FileText, X, CheckCircle, Eye, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { formatDecimal, DecimalValue } from "@/utils/decimal";
+import { formatWithCurrency, isValidCurrencyCode, CurrencyCode } from "@/utils/currency";
+import { logger } from "@/utils/log";
+import { generateSecureToken } from "@/utils/security";
 
 interface ExtractedData {
   vendor: string;
   expense_date: string;
-  amount_gross: number;
-  tax_vat: number;
-  amount_net: number;
+  amount_gross: DecimalValue;  // Use decimal type
+  tax_vat: DecimalValue;
+  amount_net: DecimalValue;
   currency: string;
   category_suggestion: string;
   payment_method_guess: 'CARD' | 'CASH' | 'TRANSFER' | 'OTHER';
@@ -129,10 +133,20 @@ export const UploadTicket = () => {
   const handleAnalyzeWithAI = async () => {
     if (!selectedFile || !currentUser) return;
 
+    const requestId = generateSecureToken(16);
+    
     setIsAnalyzing(true);
     setUploadProgress({ stage: 'uploading', progress: 0, message: 'Subiendo archivo...' });
 
     try {
+      logger.info('ticket_analysis_started', { 
+        requestId,
+        fileName: selectedFile.name,
+        fileSize: selectedFile.size,
+        fileType: selectedFile.type,
+        userId: currentUser.id
+      });
+
       // Step 1: Upload file
       setUploadProgress({ stage: 'uploading', progress: 33, message: 'Subiendo archivo...' });
       
@@ -146,7 +160,8 @@ export const UploadTicket = () => {
       const response = await supabase.functions.invoke('ai-extract-expense', {
         body: formData,
         headers: {
-          'Authorization': `Bearer ${session?.access_token}`
+          'Authorization': `Bearer ${session?.access_token}`,
+          'Idempotency-Key': requestId  // Add idempotency key
         }
       });
 
@@ -159,14 +174,47 @@ export const UploadTicket = () => {
 
       const extracted = response.data?.data;
       if (extracted) {
-        setExtractedData(extracted);
+        // Validate and parse currency
+        if (!isValidCurrencyCode(extracted.currency)) {
+          logger.error('invalid_currency_extracted', { 
+            requestId, 
+            currency: extracted.currency,
+            fileName: selectedFile.name 
+          });
+          throw new Error(`Moneda no válida: ${extracted.currency}`);
+        }
+
+        // Parse amounts using decimal utilities
+        const processedData: ExtractedData = {
+          ...extracted,
+          amount_gross: parseFloat(extracted.amount_gross.toString()),
+          tax_vat: parseFloat(extracted.tax_vat.toString()),
+          amount_net: parseFloat(extracted.amount_net.toString()),
+        };
+
+        setExtractedData(processedData);
         setUploadProgress({ stage: 'complete', progress: 100, message: 'Análisis completado' });
+        
+        logger.info('ticket_analysis_completed', { 
+          requestId,
+          vendor: processedData.vendor,
+          amount: processedData.amount_gross.toString(),
+          currency: processedData.currency,
+          category: processedData.category_suggestion
+        });
+        
         toast.success('Ticket analizado correctamente');
       } else {
         throw new Error('No se pudo extraer información del ticket');
       }
 
     } catch (error) {
+      logger.error('ticket_analysis_failed', { 
+        requestId,
+        error: error instanceof Error ? error.message : 'Unknown error',
+        fileName: selectedFile.name,
+        userId: currentUser.id
+      });
       console.error('Error analyzing ticket:', error);
       toast.error(`Error al analizar el ticket: ${error.message}`);
       setUploadProgress(null);
@@ -178,19 +226,29 @@ export const UploadTicket = () => {
   const handleSubmitExpense = async () => {
     if (!extractedData || !selectedFile || !currentUser) return;
 
+    const requestId = generateSecureToken(16);
     setIsSubmitting(true);
+    
     try {
+      logger.info('expense_submission_started', { 
+        requestId,
+        vendor: extractedData.vendor,
+        amount: extractedData.amount_gross.toString(),
+        currency: extractedData.currency,
+        userId: currentUser.id
+      });
+
       // Find category ID
       const category = categories.find(c => c.name === extractedData.category_suggestion);
       const projectCode = projectCodes.find(p => p.code === extractedData.project_code_guess);
 
       // Calculate hash for deduplication
-      const hashInput = `${selectedFile.name}-${extractedData.vendor}-${extractedData.expense_date}-${extractedData.amount_gross}`;
+      const hashInput = `${selectedFile.name}-${extractedData.vendor}-${extractedData.expense_date}-${extractedData.amount_gross.toString()}`;
       const hashBuffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(hashInput));
       const hashArray = Array.from(new Uint8Array(hashBuffer));
       const hash_dedupe = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
-      // Create expense record
+      // Create expense record with proper decimal values
       const expenseData = {
         organization_id: currentUser.organization_id,
         employee_id: currentUser.id,
@@ -198,9 +256,9 @@ export const UploadTicket = () => {
         category_id: category?.id || categories[0]?.id,
         vendor: extractedData.vendor,
         expense_date: extractedData.expense_date,
-        amount_net: extractedData.amount_net,
-        tax_vat: extractedData.tax_vat,
-        amount_gross: extractedData.amount_gross,
+        amount_net: extractedData.amount_net.toString(),      // Store as string to preserve precision
+        tax_vat: extractedData.tax_vat.toString(),
+        amount_gross: extractedData.amount_gross.toString(),
         currency: extractedData.currency,
         payment_method: extractedData.payment_method_guess as 'CARD' | 'CASH' | 'TRANSFER' | 'OTHER',
         status: 'PENDING' as const,
@@ -218,6 +276,14 @@ export const UploadTicket = () => {
 
       if (error) throw error;
 
+      logger.info('expense_submission_completed', { 
+        requestId,
+        expenseId: expense.id,
+        amount: extractedData.amount_gross.toString(),
+        currency: extractedData.currency,
+        vendor: extractedData.vendor
+      });
+
       toast.success('Gasto registrado correctamente');
       
       // Reset form
@@ -227,6 +293,13 @@ export const UploadTicket = () => {
       setUploadProgress(null);
 
     } catch (error) {
+      logger.error('expense_submission_failed', { 
+        requestId,
+        error: error instanceof Error ? error.message : 'Unknown error',
+        vendor: extractedData.vendor,
+        amount: extractedData.amount_gross.toString(),
+        userId: currentUser.id
+      });
       console.error('Error submitting expense:', error);
       toast.error('Error al registrar el gasto');
     } finally {
@@ -429,7 +502,9 @@ export const UploadTicket = () => {
                   </div>
                   <div>
                     <Label>Importe Total</Label>
-                    <p className="font-medium">{extractedData.amount_gross.toFixed(2)}€</p>
+                    <p className="font-medium">
+                      {formatWithCurrency(formatDecimal(extractedData.amount_gross, 2), extractedData.currency as CurrencyCode)}
+                    </p>
                   </div>
                   <div>
                     <Label>Categoría</Label>

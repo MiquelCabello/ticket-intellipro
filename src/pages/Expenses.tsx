@@ -1,13 +1,17 @@
 import { MainLayout } from "@/components/Layout/MainLayout";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search, Download, Eye, CheckCircle, XCircle, Filter } from "lucide-react";
+import { formatDecimal, DecimalValue } from "@/utils/decimal";
+import { formatWithCurrency } from "@/utils/currency";
+import { logger } from "@/utils/log";
+import { generateSecureToken } from "@/utils/security";
 
-// Mock data
+// Mock data with proper decimal precision
 const mockExpenses = [
   {
     id: "1",
@@ -18,9 +22,10 @@ const mockExpenses = [
     category: "Transporte",
     method: "Tarjeta",
     status: "PENDING",
-    netAmount: 25.50,
-    vat: 5.36,
-    total: 30.86,
+    netAmount: 25.5000,    // DECIMAL(18,4) precision
+    vat: 5.3550,           // Precise VAT calculation  
+    total: 30.8550,        // Precise total
+    currency: "EUR" as const,
     hasReceipt: true
   },
   {
@@ -32,9 +37,10 @@ const mockExpenses = [
     category: "Alojamiento",
     method: "Tarjeta",
     status: "APPROVED",
-    netAmount: 120.00,
-    vat: 25.20,
-    total: 145.20,
+    netAmount: 120.0000,
+    vat: 25.2000,
+    total: 145.2000,
+    currency: "EUR" as const,
     hasReceipt: true
   },
   {
@@ -46,9 +52,10 @@ const mockExpenses = [
     category: "Dietas",
     method: "Efectivo",
     status: "REJECTED",
-    netAmount: 45.00,
-    vat: 9.45,
-    total: 54.45,
+    netAmount: 45.0000,
+    vat: 9.4500,
+    total: 54.4500,
+    currency: "EUR" as const,
     hasReceipt: false
   }
 ];
@@ -57,6 +64,9 @@ const Expenses = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [categoryFilter, setCategoryFilter] = useState("all");
+
+  // Generate request ID for logging correlation
+  const requestId = generateSecureToken(16);
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -79,6 +89,20 @@ const Expenses = () => {
     
     return matchesSearch && matchesStatus && matchesCategory;
   });
+
+  // Log expense list view with structured logging
+  useEffect(() => {
+    logger.info('expense_list_viewed', { 
+      requestId,
+      totalExpenses: mockExpenses.length,
+      filteredCount: filteredExpenses.length,
+      filters: {
+        search: searchTerm || null,
+        status: statusFilter !== "all" ? statusFilter : null,
+        category: categoryFilter !== "all" ? categoryFilter : null
+      }
+    });
+  }, [requestId, filteredExpenses.length, searchTerm, statusFilter, categoryFilter]);
 
   return (
     <MainLayout>
@@ -167,9 +191,9 @@ const Expenses = () => {
                   <TableCell>{expense.category}</TableCell>
                   <TableCell>{expense.method}</TableCell>
                   <TableCell>{getStatusBadge(expense.status)}</TableCell>
-                  <TableCell className="text-right">{expense.netAmount.toFixed(2)}€</TableCell>
-                  <TableCell className="text-right">{expense.vat.toFixed(2)}€</TableCell>
-                  <TableCell className="text-right font-medium">{expense.total.toFixed(2)}€</TableCell>
+                  <TableCell className="text-right">{formatWithCurrency(formatDecimal(expense.netAmount), expense.currency)}</TableCell>
+                  <TableCell className="text-right">{formatWithCurrency(formatDecimal(expense.vat), expense.currency)}</TableCell>
+                  <TableCell className="text-right font-medium">{formatWithCurrency(formatDecimal(expense.total), expense.currency)}</TableCell>
                   <TableCell>
                     {expense.hasReceipt ? (
                       <Button variant="outline" size="sm">
@@ -183,10 +207,34 @@ const Expenses = () => {
                     <div className="flex gap-1">
                       {expense.status === "PENDING" && (
                         <>
-                          <Button variant="outline" size="sm" className="text-green-600">
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="text-green-600"
+                            onClick={() => {
+                              logger.info('expense_approve_clicked', { 
+                                requestId: generateSecureToken(16),
+                                expenseId: expense.id,
+                                amount: expense.total.toString(),
+                                currency: expense.currency
+                              });
+                            }}
+                          >
                             <CheckCircle className="w-4 h-4" />
                           </Button>
-                          <Button variant="outline" size="sm" className="text-red-600">
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="text-red-600"
+                            onClick={() => {
+                              logger.info('expense_reject_clicked', { 
+                                requestId: generateSecureToken(16),
+                                expenseId: expense.id,
+                                amount: expense.total.toString(),
+                                currency: expense.currency
+                              });
+                            }}
+                          >
                             <XCircle className="w-4 h-4" />
                           </Button>
                         </>
