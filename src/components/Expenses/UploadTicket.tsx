@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Upload, Camera, FileText, X, CheckCircle, Eye, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { formatDecimal, DecimalValue } from "@/utils/decimal";
+import { formatDecimal, DecimalValue, toDecimal } from "@/utils/decimal";
 import { formatWithCurrency, isValidCurrencyCode, CurrencyCode } from "@/utils/currency";
 import { logger } from "@/utils/log";
 import { generateSecureToken } from "@/utils/security";
@@ -256,9 +256,9 @@ export const UploadTicket = () => {
         category_id: category?.id || categories[0]?.id,
         vendor: extractedData.vendor,
         expense_date: extractedData.expense_date,
-        amount_net: extractedData.amount_net.toString(),      // Store as string to preserve precision
-        tax_vat: extractedData.tax_vat.toString(),
-        amount_gross: extractedData.amount_gross.toString(),
+        amount_net: toDecimal(extractedData.amount_net),
+        tax_vat: toDecimal(extractedData.tax_vat),
+        amount_gross: toDecimal(extractedData.amount_gross),
         currency: extractedData.currency,
         payment_method: extractedData.payment_method_guess as 'CARD' | 'CASH' | 'TRANSFER' | 'OTHER',
         status: 'PENDING' as const,
@@ -503,7 +503,7 @@ export const UploadTicket = () => {
                   <div>
                     <Label>Importe Total</Label>
                     <p className="font-medium">
-                      {formatWithCurrency(formatDecimal(extractedData.amount_gross, 2), extractedData.currency as CurrencyCode)}
+                      {formatWithCurrency(parseFloat(String(extractedData.amount_gross)), extractedData.currency as CurrencyCode)}
                     </p>
                   </div>
                   <div>

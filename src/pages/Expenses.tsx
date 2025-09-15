@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search, Download, Eye, CheckCircle, XCircle, Filter } from "lucide-react";
-import { formatDecimal, DecimalValue } from "@/utils/decimal";
+import { formatDecimal, DecimalValue, toDecimal } from "@/utils/decimal";
 import { formatWithCurrency } from "@/utils/currency";
 import { logger } from "@/utils/log";
 import { generateSecureToken } from "@/utils/security";
@@ -191,9 +191,9 @@ const Expenses = () => {
                   <TableCell>{expense.category}</TableCell>
                   <TableCell>{expense.method}</TableCell>
                   <TableCell>{getStatusBadge(expense.status)}</TableCell>
-                  <TableCell className="text-right">{formatWithCurrency(formatDecimal(expense.netAmount), expense.currency)}</TableCell>
-                  <TableCell className="text-right">{formatWithCurrency(formatDecimal(expense.vat), expense.currency)}</TableCell>
-                  <TableCell className="text-right font-medium">{formatWithCurrency(formatDecimal(expense.total), expense.currency)}</TableCell>
+                  <TableCell className="text-right">{formatWithCurrency(expense.netAmount, expense.currency)}</TableCell>
+                  <TableCell className="text-right">{formatWithCurrency(expense.vat, expense.currency)}</TableCell>
+                  <TableCell className="text-right font-medium">{formatWithCurrency(expense.total, expense.currency)}</TableCell>
                   <TableCell>
                     {expense.hasReceipt ? (
                       <Button variant="outline" size="sm">
