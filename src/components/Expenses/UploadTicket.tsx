@@ -53,7 +53,31 @@ export const UploadTicket = () => {
     const loadInitialData = async () => {
       try {
         const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
+        
+        // For demo purposes, create mock user data if no auth
+        if (!user) {
+          const mockUser = {
+            id: 'demo-user',
+            organization_id: 'demo-org',
+            name: 'Demo User',
+            email: 'demo@example.com'
+          };
+          setCurrentUser(mockUser);
+          
+          // Set demo categories
+          setCategories([
+            { id: 'cat-1', name: 'Comidas', organization_id: 'demo-org' },
+            { id: 'cat-2', name: 'Transporte', organization_id: 'demo-org' },
+            { id: 'cat-3', name: 'Alojamiento', organization_id: 'demo-org' }
+          ]);
+          
+          // Set demo project codes
+          setProjectCodes([
+            { id: 'proj-1', name: 'Proyecto A', code: 'PROJ-A', organization_id: 'demo-org' },
+            { id: 'proj-2', name: 'Proyecto B', code: 'PROJ-B', organization_id: 'demo-org' }
+          ]);
+          return;
+        }
 
         const { data: userData } = await supabase
           .from('users')

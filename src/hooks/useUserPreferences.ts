@@ -38,7 +38,9 @@ export const useUserPreferences = () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       
+      // For now, work without authentication - use default preferences
       if (!user) {
+        setPreferences(DEFAULT_PREFERENCES);
         setLoading(false);
         return;
       }
@@ -97,12 +99,16 @@ export const useUserPreferences = () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       
+      // For now, work without authentication - just update local state
       if (!user) {
+        const updatedPreferences = { ...preferences, ...updates, updated_at: new Date().toISOString() };
+        setPreferences(updatedPreferences);
+        
         toast({
-          title: "Error",
-          description: "Usuario no autenticado",
-          variant: "destructive",
+          title: "Guardado",
+          description: "Preferencias actualizadas (modo demo)",
         });
+        
         setSaving(false);
         return;
       }
