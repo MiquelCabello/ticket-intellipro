@@ -154,12 +154,13 @@ export const useUserPreferences = () => {
 
   const applyTheme = (theme: ThemePreference) => {
     const root = window.document.documentElement;
-    
-    if (theme === 'SYSTEM') {
-      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-      root.className = systemTheme;
-    } else {
-      root.className = theme.toLowerCase();
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const shouldBeDark = theme === 'DARK' || (theme === 'SYSTEM' && prefersDark);
+
+    // Ensure we don't wipe other classes and only toggle dark mode class
+    root.classList.remove('dark');
+    if (shouldBeDark) {
+      root.classList.add('dark');
     }
   };
 

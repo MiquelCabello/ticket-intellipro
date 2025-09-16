@@ -30,6 +30,13 @@ export const CategoriesManagement = () => {
 
   const loadCategories = async () => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        // Demo mode: no auth, just show empty list without errors
+        setCategories([]);
+        return;
+      }
+
       const { data, error } = await supabase
         .from('categories')
         .select('*')
@@ -52,15 +59,43 @@ export const CategoriesManagement = () => {
 
   const handleSaveCategory = async () => {
     try {
-      const categoryData = {
-        name: formData.name,
-        budget_monthly: formData.budget_monthly ? parseFloat(formData.budget_monthly) : null,
-      };
+      const budgetValue = formData.budget_monthly ? parseFloat(formData.budget_monthly) : null;
+      const base = { name: formData.name, budget_monthly: budgetValue };
+
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (!user) {
+        // Demo mode: update local state without backend
+        if (editingCategory) {
+          setCategories(prev => prev.map(c => c.id === editingCategory.id ? { ...c, ...base } : c));
+          toast({
+            title: "Categoría actualizada",
+            description: "Modo demo: cambio aplicado localmente",
+          });
+        } else {
+          const newCategory: Category = {
+            id: (typeof crypto !== 'undefined' && 'randomUUID' in crypto) ? crypto.randomUUID() : Math.random().toString(36).slice(2),
+            name: base.name,
+            budget_monthly: base.budget_monthly,
+            organization_id: 'demo-org',
+          };
+          setCategories(prev => [newCategory, ...prev]);
+          toast({
+            title: "Categoría creada",
+            description: "Modo demo: elemento creado localmente",
+          });
+        }
+
+        setIsDialogOpen(false);
+        setEditingCategory(null);
+        setFormData({ name: '', budget_monthly: '' });
+        return;
+      }
 
       if (editingCategory) {
         const { error } = await supabase
           .from('categories')
-          .update(categoryData)
+          .update(base)
           .eq('id', editingCategory.id);
 
         if (error) throw error;
@@ -70,9 +105,6 @@ export const CategoriesManagement = () => {
           description: "Los cambios se han guardado correctamente",
         });
       } else {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
-
         const { data: userData } = await supabase
           .from('users')
           .select('organization_id')
@@ -84,7 +116,7 @@ export const CategoriesManagement = () => {
         const { error } = await supabase
           .from('categories')
           .insert({
-            ...categoryData,
+            ...base,
             organization_id: userData.organization_id,
           });
 
@@ -116,6 +148,17 @@ export const CategoriesManagement = () => {
     }
 
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        // Demo mode: remove locally
+        setCategories(prev => prev.filter(c => c.id !== categoryId));
+        toast({
+          title: "Categoría eliminada",
+          description: "Modo demo: elemento eliminado localmente",
+        });
+        return;
+      }
+
       const { error } = await supabase
         .from('categories')
         .delete()
