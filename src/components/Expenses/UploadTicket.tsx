@@ -248,7 +248,7 @@ export const UploadTicket = () => {
   };
 
   const handleSubmitExpense = async () => {
-    if (!extractedData || !selectedFile || !currentUser) return;
+    if (!extractedData || !selectedFile) return;
 
     const requestId = generateSecureToken(16);
     setIsSubmitting(true);
@@ -259,8 +259,25 @@ export const UploadTicket = () => {
         vendor: extractedData.vendor,
         amount: extractedData.amount_gross.toString(),
         currency: extractedData.currency,
-        userId: currentUser.id
+        userId: currentUser?.id || 'demo'
       });
+
+      // Demo mode: just show success without saving to database
+      if (!currentUser) {
+        // Simulate processing delay
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        
+        toast("Gasto procesado (Demo)", {
+          description: `${extractedData.vendor}: €${extractedData.amount_gross.toFixed(2)}`,
+        });
+
+        // Reset form
+        setSelectedFile(null);
+        setExtractedData(null);
+        setUploadProgress(null);
+        setIsSubmitting(false);
+        return;
+      }
 
       // Find category ID
       const category = categories.find(c => c.name === extractedData.category_suggestion);

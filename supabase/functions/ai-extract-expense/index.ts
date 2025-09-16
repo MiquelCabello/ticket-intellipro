@@ -53,31 +53,30 @@ const handler = async (req: Request): Promise<Response> => {
       });
     }
 
-    // Verify user authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser(
-      authHeader?.replace('Bearer ', '') || ''
-    );
-
-    if (authError || !user) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      });
+    // Try to verify user authentication, but allow demo mode
+    let user = null;
+    let userData = null;
+    
+    if (authHeader && authHeader !== 'Bearer null' && authHeader !== 'Bearer undefined') {
+      const { data: authData, error: authError } = await supabase.auth.getUser(
+        authHeader.replace('Bearer ', '')
+      );
+      
+      if (!authError && authData.user) {
+        user = authData.user;
+        
+        // Get user's organization
+        const { data: userOrgData } = await supabase
+          .from('users')
+          .select('organization_id')
+          .eq('id', user.id)
+          .single();
+          
+        userData = userOrgData;
+      }
     }
 
-    // Get user's organization
-    const { data: userData } = await supabase
-      .from('users')
-      .select('organization_id')
-      .eq('id', user.id)
-      .single();
-
-    if (!userData) {
-      return new Response(JSON.stringify({ error: 'User not found' }), {
-        status: 404,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      });
-    }
+    console.log('Auth status:', user ? 'Authenticated' : 'Demo mode');
 
     console.log('Processing file:', file.name, 'Size:', file.size);
 
